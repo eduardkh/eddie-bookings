@@ -1,19 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"text/template"
 )
 
 const port string = ":8080"
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World! %s", time.Now())
+	renderTemplate(w, "home.page.gohtml")
 }
 func About(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World! %s", time.Now())
+	renderTemplate(w, "about.page.gohtml")
+}
+
+func renderTemplate(w http.ResponseWriter, tmpl string) {
+	parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
+	err := parsedTemplate.Execute(w, nil)
+	if err != nil {
+		log.Println("Error parsing template", err)
+		return
+	}
 }
 
 func main() {
