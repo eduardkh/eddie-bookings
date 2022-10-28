@@ -1,15 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+{{template "base" .}}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-
-<body>
-    <h1>About Page</h1>
-</body>
-
-</html>
+{{define "content"}}
+<div class="container">
+    <header>
+        <!-- place navbar here -->
+        <h1>About Page</h1>
+    </header>
+    <main>
+        <p>
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex, blanditiis. Ab laudantium laboriosam hic,
+            ipsum ea non repellat blanditiis atque similique eos assumenda accusantium delectus pariatur eius sequi
+            voluptatum perferendis!
+        </p>
+    </main>
+</div>
+<footer>
+    <!-- place footer here -->
+</footer>
+{{end}}
