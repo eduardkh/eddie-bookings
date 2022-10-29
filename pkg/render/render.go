@@ -1,52 +1,74 @@
 package render
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
 )
 
-var templateCache = make(map[string]*template.Template)
+var functions = template.FuncMap{}
 
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, t string) {
-	var template *template.Template
-	var err error
-
-	// check if template already in cache - comma ok idiom
-	_, ok := templateCache[t]
-	if !ok {
-		// need to create a template - read from disk
-		log.Println("creating template and adding to cache")
-		err = createTemplateCache(t)
-		if err != nil {
-			log.Println(err)
-		}
-	} else {
-		// use cached templates - read from memory
-		log.Println("using template from cache")
+func RenderTemplate(w http.ResponseWriter, tmpl string) {
+	// create template cache
+	tc, err := CreateTemplateCache()
+	if err != nil {
+		log.Fatal(err)
 	}
-	template = templateCache[t]
-	err = template.Execute(w, nil)
+
+	// get requested template from cache
+	t, ok := tc[tmpl]
+	if !ok {
+		log.Fatal(err)
+	}
+	buf := new(bytes.Buffer)
+	err = t.Execute(buf, nil)
 	if err != nil {
 		log.Println(err)
 	}
+
+	// render the template
+	_, err = buf.WriteTo(w)
+	if err != nil {
+		fmt.Println("error writing template to browser", err)
+	}
+
 }
 
-// createTemplateCache creates an in memory caching layer for the templates
-func createTemplateCache(t string) error {
-	// templates from the templates folder - passed in the handlers
-	templates := []string{
-		fmt.Sprintf("./templates/%s", t),
-		"./templates/base.layout.gohtml",
-	}
-	// parse templates from disk
-	template, err := template.ParseFiles(templates...)
+// CreateTemplateCache creates a template cache as a map
+func CreateTemplateCache() (map[string]*template.Template, error) {
+
+	myCache := map[string]*template.Template{}
+
+	// get all files named *.page.gohtml from ./templates/
+	pages, err := filepath.Glob("./templates/*.page.gohtml")
 	if err != nil {
-		return err
+		return myCache, err
 	}
-	// add template to cache - map
-	templateCache[t] = template
-	return nil
+
+	// range over all files ending with *.page.gohtml
+	for _, page := range pages {
+		name := filepath.Base(page)
+		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
+		if err != nil {
+			return myCache, err
+		}
+		layout, err := filepath.Glob("./templates/*.layout.gohtml")
+		if err != nil {
+			return myCache, err
+		}
+		if len(layout) > 0 {
+			ts, err = ts.ParseGlob("./templates/*.layout.gohtml")
+			if err != nil {
+				return myCache, err
+			}
+		}
+
+		myCache[name] = ts
+	}
+
+	return myCache, nil
 }
