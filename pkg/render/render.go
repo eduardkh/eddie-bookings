@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/eduardkh/eddie-bookings/pkg/config"
+	"github.com/eduardkh/eddie-bookings/pkg/models"
 )
 
 var functions = template.FuncMap{}
@@ -21,7 +22,7 @@ func NewTemplates(a *config.AppConfig) {
 }
 
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	var tc map[string]*template.Template
 
 	if app.UseCache {
@@ -40,7 +41,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 
 	buf := new(bytes.Buffer)
 
-	_ = t.Execute(buf, nil)
+	_ = t.Execute(buf, td)
 
 	// render the template
 	_, err := buf.WriteTo(w)

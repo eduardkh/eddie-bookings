@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/eduardkh/eddie-bookings/pkg/config"
+	"github.com/eduardkh/eddie-bookings/pkg/models"
 	"github.com/eduardkh/eddie-bookings/pkg/render"
 )
 
@@ -29,10 +30,17 @@ func NewHandlers(r *Repository) {
 
 // Home is the handler for the home page
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.gohtml")
+	// perform some logic
+	data := make(map[string]string)
+	data["data"] = "Hello, again"
+
+	// send data to the template
+	render.RenderTemplate(w, "home.page.gohtml", &models.TemplateData{
+		StringMap: data,
+	})
 }
 
 // About is the handler for the about page
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.gohtml")
+	render.RenderTemplate(w, "about.page.gohtml", &models.TemplateData{})
 }
