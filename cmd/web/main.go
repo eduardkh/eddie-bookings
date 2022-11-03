@@ -4,14 +4,22 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+
 	"github.com/eduardkh/eddie-bookings/pkg/config"
 	"github.com/eduardkh/eddie-bookings/pkg/handlers"
 	"github.com/eduardkh/eddie-bookings/pkg/render"
+	"github.com/eduardkh/eddie-bookings/pkg/routes"
 )
 
 const port string = ":8080"
 
 func main() {
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	routes.Routes(router)
+
 	var app config.AppConfig
 
 	tc, err := render.CreateTemplateCache()
@@ -27,9 +35,6 @@ func main() {
 
 	render.NewTemplates(&app)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
-
 	log.Printf("Server running on port '%s'\n", port)
-	http.ListenAndServe(port, nil)
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
