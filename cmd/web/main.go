@@ -9,6 +9,7 @@ import (
 
 	"github.com/eduardkh/eddie-bookings/pkg/config"
 	"github.com/eduardkh/eddie-bookings/pkg/handlers"
+	middle "github.com/eduardkh/eddie-bookings/pkg/middleware"
 	"github.com/eduardkh/eddie-bookings/pkg/render"
 	"github.com/eduardkh/eddie-bookings/pkg/routes"
 )
@@ -18,6 +19,7 @@ const port string = ":8080"
 func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+	router.Use(middle.CSRFToken)
 	routes.Routes(router)
 
 	var app config.AppConfig
