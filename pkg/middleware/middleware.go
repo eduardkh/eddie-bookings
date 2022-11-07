@@ -7,7 +7,11 @@ import (
 	"github.com/justinas/nosurf"
 )
 
-var app = &config.App
+var app *config.AppConfig
+
+func NewAppConfig(a *config.AppConfig) {
+	app = a
+}
 
 // WriteToConsole simple middleware example
 //

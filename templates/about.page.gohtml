@@ -7,6 +7,17 @@
         <h1>About Page</h1>
     </header>
     <main>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    {{if ne (index .StringMap "remoteIP") ""}}
+                    <p>{{index .StringMap "remoteIP"}} this is your IP address</p>
+                    {{else}}
+                    <p>Please visit home page first, <a href="/">home</a></p>
+                    {{end}}
+                </div>
+            </div>
+        </div>
         <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex, blanditiis. Ab laudantium laboriosam hic,
             ipsum ea non repellat blanditiis atque similique eos assumenda accusantium delectus pariatur eius sequi

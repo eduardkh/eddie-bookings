@@ -16,4 +16,4 @@ type AppConfig struct {
 	Session       *scs.SessionManager
 }
 
-var App = AppConfig{}
+
