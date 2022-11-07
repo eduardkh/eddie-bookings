@@ -18,13 +18,24 @@ import (
 
 const port string = ":8080"
 
-var app = &config.App
+var app config.AppConfig
 
 var session *scs.SessionManager
 
 func main() {
 	// change this to true when in production
 	app.InProduction = false
+
+	tc, err := render.CreateTemplateCache()
+	if err != nil {
+		log.Fatal("cannot create template cache")
+	}
+	app.TemplateCache = tc
+	app.UseCache = false
+	render.NewTemplates(&app)
+	repo := handlers.NewRepo(&app)
+	handlers.NewHandlers(repo)
+	middle.NewAppConfig(&app)
 
 	// set up the session
 	session = scs.New()
@@ -42,19 +53,6 @@ func main() {
 	// router.Use(middle.WriteToConsole)
 	routes.Routes(router)
 
-	tc, err := render.CreateTemplateCache()
-	if err != nil {
-		log.Fatal("cannot create template cache")
-	}
-
-	app.TemplateCache = tc
-	app.UseCache = false
-
-	repo := handlers.NewRepo(app)
-	handlers.NewHandlers(repo)
-
-	render.NewTemplates(app)
-
-	log.Printf("Server running on port '%s'\n", port)
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Println("Server running on port http://localhost" + port)
+	log.Fatal(http.ListenAndServe(port, router))
 }
